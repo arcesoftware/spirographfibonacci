@@ -84,7 +84,7 @@ def clockface(radius):
         else:
             dot(6)
             jump(-radius)
-        rt(9)
+        rt(6)
 
 def setup():
     global second_hand, minute_hand, hour_hand, writer
