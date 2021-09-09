@@ -1,24 +1,17 @@
 
-"""       turtle-example-suite:
-
-             tdemo_clock.py
-
-Enhanced clock-program, showing date
-and time
+"""       turtle-example:
   ------------------------------------
-   Press STOP to exit the program!
+   	spirographfibonacci
   ------------------------------------
 """
 import turtle 
 from turtle import *
 from datetime import datetime
 import colorsys
-
-n = 17 #recomendado 17
-
+# taking input for the number of the sides of the polygon 
+n = 17
 # taking input for the length of the sides of the polygon 
-l = 29 #recomendado 29
-
+l = 29 
 # taking input for the speed of the growth of the polygon 
 v = 0
 
@@ -51,8 +44,6 @@ def fibonacci(n):
     else: f = fibonacci(n-1) + fibonacci(n-2)
     memo[n] = f 
     return f
-
-
 
 def jump(distanz, winkel=0):
     penup()
@@ -161,7 +152,6 @@ def tick():
     except Terminator:
         pass  # turtledemo user pressed STOP
 
-
 def star1(fibonacci):
     skk.goto(x , y)             #draw when the turtle moves
     skk.speed(v)
@@ -185,9 +175,6 @@ def star1(fibonacci):
 			    skk.forward(l)
 			    skk.left(n)	
 		    skk.left(l)
-			
-
-
 def star2(fibonacci):
     skk.reset()
     for i in range(n):
@@ -210,13 +197,6 @@ def star2(fibonacci):
 			    skk.forward(n)
 			    skk.left(l)	
 		    skk.left(n)
-	
-
-
-    
-
-
-  
 def main():
     tracer(False)
     setup()
@@ -224,8 +204,6 @@ def main():
     tick()
     star1(fibonacci)  , star2(fibonacci) 
     return "EVENTLOOP"
-
-
 
 while __name__ == "__main__":
    
