@@ -1,4 +1,4 @@
- #Recursion/Droste effect/John William Waterhouse/(Ouroborus cataphractus)/2020 Turrialba Costa Rica
+ #Recursion/Droste effect/Juan Arce/(Ouroborus cataphractus)/2020 Turrialba Costa Rica
  # taking input for the no of the sides of the polygon
 
 fibonacci_cache = {}
