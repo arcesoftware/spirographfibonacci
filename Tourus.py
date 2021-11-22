@@ -1,6 +1,5 @@
- #Recursion/Droste effect/Juan Arce/(Ouroborus cataphractus)/2020 Turrialba Costa Rica
- # taking input for the no of the sides of the polygon
-
+ #Juan Arce/(Ouroborus cataphractus)/2020 Turrialba Costa Rica
+#Fiboonacci Algorithm
 fibonacci_cache = {}
  
 def fibonacci(n):
@@ -21,11 +20,10 @@ def fibonacci(n):
   yield value
   
 # taking input for the number of the sides of the polygon 
-n = int(input("Ingrese el numero de lados del Poligono Fibonacci : "))
+n = int(input("Sizes of Poligon Fibonacci : "))
 # taking input for the length of the sides of the polygon 
-l = int(input("Ingrese el largo de los lados del Poligono Fibonacci : "))
-# taking input for the speed of the growth of the polygon 
-v = int(input("Ingrese la velocidad del crecimiento : "))
+l = int(input("Length of the Poligon Fibonacci : "))
+
 
 import turtle
 
@@ -35,9 +33,9 @@ wn.title("Armadillo")
 skk = turtle.Turtle()
 skk.color("white")
 r = 360/n-2
-skk.speed(0)
+skk.speed(200)
 skk.penup()
-skk.goto(400, 0)       #move the turtle to a location
+skk.goto(0, 0)       #move the turtle to a location
 skk.pendown()
 def star1(fibonacci):
   for i in range(fibonacci):
