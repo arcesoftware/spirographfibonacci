@@ -4,7 +4,7 @@ fibonacci_cache = {}
  
 def fibonacci(n):
  #If we have cached the valued, then return it 
- if n in fibonacci_cahce:
+ if n in fibonacci_cache:
   yield fibonacci_cache[n]
          
  # Compute the Nth term
