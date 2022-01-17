@@ -2,14 +2,14 @@
 
 import turtle 
 
-# taking input for the number of the sides of the polygon, Try with 13
-n = int(input("Ingrese el numero de lados del Poligono Fibonacci : ")) 
+# Try with 13
+n = int(input("taking input for the number of the sides of the polygon : ")) 
 
-# taking input for the length of the sides of the polygon, Try with 55
-l = int(input("Ingrese el largo de los lados del Poligono Fibonacci : "))
+# Try with 55
+l = int(input("taking input for the length of the sides of the polygon : "))
 
-# taking input for the speed of the growth of the polygon, Try with 0 
-v = int(input("Ingrese la velocidad del crecimiento : "))
+# Try with 0 
+v = int(input("taking input for the speed of the growth of the polygon : "))
 
 wn = turtle.Screen()
 wn.bgcolor("black")
