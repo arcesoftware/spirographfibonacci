@@ -2,7 +2,7 @@
 
 import turtle 
 
-# taking input for the length of the sides of the polygon, Try with 13
+# taking input for the number of the sides of the polygon, Try with 13
 n = int(input("Ingrese el numero de lados del Poligono Fibonacci : ")) 
 
 # taking input for the length of the sides of the polygon, Try with 55
