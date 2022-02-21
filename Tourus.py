@@ -2,14 +2,10 @@
 
 import turtle 
 
-# Try with 13
-n = int(input("taking input for the number of the sides of the polygon : ")) 
-
-# Try with 55
-l = int(input("taking input for the length of the sides of the polygon : "))
-
-# Try with 0 
-v = int(input("taking input for the speed of the growth of the polygon : "))
+#number of sides
+n = 13
+#lenght of the sizes
+l = 55
 
 wn = turtle.Screen()
 wn.bgcolor("black")
@@ -29,15 +25,15 @@ colors = [
 (0.00, 0.00, 1.00),(0.05, 0.00, 1.00),(0.10, 0.00, 1.00),(0.15, 0.00, 1.00),(0.20, 0.00, 1.00),(0.25, 0.00, 1.00),(0.30, 0.00, 1.00),(0.35, 0.00, 1.00),(0.40, 0.00, 1.00),(0.45, 0.00, 1.00),(0.50, 0.00, 1.00),(0.55, 0.00, 1.00),(0.60, 0.00, 1.00),(0.65, 0.00, 1.00),(0.70, 0.00, 1.00),(0.75, 0.00, 1.00),(0.80, 0.00, 1.00),(0.85, 0.00, 1.00),(0.90, 0.00, 1.00),(0.95, 0.00, 1.00)
 ]
 
-memo = {}
+from functools import lru_cache
+@lru_cache(maxsize = None)
 def fibonacci(n):
-    if n in memo : 
-        return memo[n]
-    if n <= 2: 
-        f = 1
-    else: f = fibonacci(n-1) + fibonacci(n-2)
-    memo[n] = f 
-    return f
+    if n == 1: 
+        return 1
+    elif n == 2: 
+        return 1
+    elif n > 2:
+        return fibonacci(n-1) + fibonacci(n-2)
 
 
 def star1(fibonacci):
