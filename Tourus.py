@@ -11,7 +11,7 @@ wn = turtle.Screen()
 wn.bgcolor("black")
 wn.title("Armadillo")
 skk = turtle.Turtle()
-
+skk.speed(0)
 colors = [
 #reddish colors
 (1.00, 0.00, 0.00),(1.00, 0.03, 0.00),(1.00, 0.05, 0.00),(1.00, 0.07, 0.00),(1.00, 0.10, 0.00),(1.00, 0.12, 0.00),(1.00, 0.15, 0.00),(1.00, 0.17, 0.00),(1.00, 0.20, 0.00),(1.00, 0.23, 0.00),(1.00, 0.25, 0.00),(1.00, 0.28, 0.00),(1.00, 0.30, 0.00),(1.00, 0.33, 0.00),(1.00, 0.35, 0.00),(1.00, 0.38, 0.00),(1.00, 0.40, 0.00),(1.00, 0.42, 0.00),(1.00, 0.45, 0.00),(1.00, 0.47, 0.00),
@@ -38,7 +38,6 @@ def fibonacci(n):
 
 def star1(fibonacci):
     skk.goto(100 , -175)             #draw when the turtle moves
-    skk.speed(v)
     for i in range(n):
 	    for colors in [
 #reddish colors
