@@ -1,4 +1,4 @@
-#Arce Software/(The Ouroborus Cataphractus)/2022 Costa Rica
+#Arce Software/(The Ouroborus Cataphractus)/March 2022 Costa Rica
 
 import turtle 
 
@@ -25,7 +25,7 @@ colors = [
 (0.00, 0.00, 1.00),(0.05, 0.00, 1.00),(0.10, 0.00, 1.00),(0.15, 0.00, 1.00),(0.20, 0.00, 1.00),(0.25, 0.00, 1.00),(0.30, 0.00, 1.00),(0.35, 0.00, 1.00),(0.40, 0.00, 1.00),(0.45, 0.00, 1.00),(0.50, 0.00, 1.00),(0.55, 0.00, 1.00),(0.60, 0.00, 1.00),(0.65, 0.00, 1.00),(0.70, 0.00, 1.00),(0.75, 0.00, 1.00),(0.80, 0.00, 1.00),(0.85, 0.00, 1.00),(0.90, 0.00, 1.00),(0.95, 0.00, 1.00)
 ]
 
-""""memo = {}
+memo = {}
 def fibonacci(n):
     if n in memo : 
         return memo[n]
@@ -33,20 +33,10 @@ def fibonacci(n):
         f = 1
     else: f = fibonacci(n-1) + fibonacci(n-2)
     memo[n] = f 
-    return f""""
+    return f
 
 
 
-
-from functools import lru_cache
-@lru_cache(maxsize = None)
-def fibonacci(n):
-    if n == 1: 
-        return 1
-    elif n == 2: 
-        return 1
-    elif n > 2:
-        return fibonacci(n-1) + fibonacci(n-2)
 
 
 def star1(fibonacci):
@@ -64,13 +54,13 @@ def star1(fibonacci):
 #blueish colors
 (0.00, 0.00, 1.00),(0.05, 0.00, 1.00),(0.10, 0.00, 1.00),(0.15, 0.00, 1.00),(0.20, 0.00, 1.00),(0.25, 0.00, 1.00),(0.30, 0.00, 1.00),(0.35, 0.00, 1.00),(0.40, 0.00, 1.00),(0.45, 0.00, 1.00),(0.50, 0.00, 1.00),(0.55, 0.00, 1.00),(0.60, 0.00, 1.00),(0.65, 0.00, 1.00),(0.70, 0.00, 1.00),(0.75, 0.00, 1.00),(0.80, 0.00, 1.00),(0.85, 0.00, 1.00),(0.90, 0.00, 1.00),(0.95, 0.00, 1.00)
 ]:
-		    skk.color(colors)
-		    for i in range (37):
-			    if i==n or i == l:
-				    skk.forward(n)
-			    skk.forward(l)
-			    skk.left(n)	
-		    skk.left(l)
+                skk.color(colors)
+                for i in range (37):
+                    if i==n or i == l:
+                        skk.forward(n)
+                    skk.forward(l)
+                    skk.left(n)
+                skk.left(l)
 			
 
 def star2(fibonacci):
@@ -88,13 +78,13 @@ def star2(fibonacci):
 #blueish colors
 (0.00, 0.00, 1.00),(0.05, 0.00, 1.00),(0.10, 0.00, 1.00),(0.15, 0.00, 1.00),(0.20, 0.00, 1.00),(0.25, 0.00, 1.00),(0.30, 0.00, 1.00),(0.35, 0.00, 1.00),(0.40, 0.00, 1.00),(0.45, 0.00, 1.00),(0.50, 0.00, 1.00),(0.55, 0.00, 1.00),(0.60, 0.00, 1.00),(0.65, 0.00, 1.00),(0.70, 0.00, 1.00),(0.75, 0.00, 1.00),(0.80, 0.00, 1.00),(0.85, 0.00, 1.00),(0.90, 0.00, 1.00),(0.95, 0.00, 1.00)
 ]:
-		    skk.color(colors)
-		    for i in range (37):
-			    if i==n or i == l:
-				    skk.forward(l)
-			    skk.forward(n)
-			    skk.left(l)	
-		    skk.left(n)
+                skk.color(colors)
+                for i in range (37):
+                    if i==n or i == l:
+                        skk.forward(l)
+                    skk.forward(n)
+                    skk.left(l)
+                skk.left(n)
 	
 
 while True: 
