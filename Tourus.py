@@ -8,7 +8,8 @@ n = 13
 l = 55
 
 wn = turtle.Screen()
-wn.bgcolor("black")
+wn.bgcolor('black')
+wn.screensize(canvwidth=7680, canvheight=4800, bg-'black')
 wn.title("Armadillo")
 skk = turtle.Turtle()
 skk.speed(0)
