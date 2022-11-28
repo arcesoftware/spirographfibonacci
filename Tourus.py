@@ -1,4 +1,4 @@
-#Arce Software/(The Ouroborus Cataphractus)/March 2022 Costa Rica 
+#Arce Software/(The Ouroborus Cataphractus)/March 2022 Costa Rica | Juan Arce
 import turtle 
 #number of sides
 n = 13
