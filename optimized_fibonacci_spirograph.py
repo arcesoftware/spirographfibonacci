@@ -23,12 +23,12 @@ def sprirograph(fibonacci_sequence):
     for f in fibonacci_sequence:
         turtle.color('red')
         turtle.speed(0)
-        for i in range(f):
+        for i in range(37):
             if i == n or i == l:
-                turtle.forward(f)
-            turtle.forward(f)
-            turtle.left(f)
-        turtle.left(f)
+                turtle.forward(n)
+            turtle.forward(l)
+            turtle.left(n)
+        turtle.left(l)
 
 i = 0
 while i < 10: 
