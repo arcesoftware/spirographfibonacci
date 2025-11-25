@@ -1,0 +1,335 @@
+# fib_3d_turtle_golden_leaves_debugged.py
+# Debugged + visually improved version of your 3D turtle Fibonacci + golden-angle leaves
+# Controls:
+#  Left drag: rotate    | Right drag: pan    | Wheel: zoom
+#  L: toggle leaves     | T: toggle trails   | C: clear all
+#
+# Requires: pygame, numpy, PyOpenGL
+# Run: python fib_3d_turtle_golden_leaves_debugged.py
+
+import pygame
+from pygame.locals import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
+import numpy as np
+import math
+import random
+import colorsys
+import sys
+from collections import deque
+
+WIDTH, HEIGHT = 1280, 800
+
+# =====================================================================
+# Fibonacci
+# =====================================================================
+def fibonacci(n):
+    f = [1, 1]
+    while len(f) < n:
+        f.append(f[-1] + f[-2])
+    return f
+
+FIB_LIST = fibonacci(40)
+FIB_MAX = float(FIB_LIST[-1])
+
+# golden angle in degrees (approx 137.507764°)
+GOLDEN_ANGLE_DEG = 137.50776405003785
+
+# =====================================================================
+# Rotation Helpers
+# =====================================================================
+def rotate_vec(v, axis, angle_deg):
+    """Rotate vector v around axis by angle_deg degrees (right-hand)."""
+    angle = math.radians(angle_deg)
+    axis  = axis / (np.linalg.norm(axis) + 1e-12)
+    v = np.array(v, dtype=float)
+    c = math.cos(angle)
+    s = math.sin(angle)
+    return v * c + np.cross(axis, v) * s + axis * (np.dot(axis, v) * (1 - c))
+
+# =====================================================================
+# 3D Turtle (improved: cap segments to prevent runaway growth)
+# =====================================================================
+MAX_SEGMENTS_PER_LOOP = 4000
+MAX_LEAVES_PER_LOOP = 800
+
+class Turtle3D:
+    def __init__(self, fib_index=4):
+        self.fib_index = int(fib_index) % len(FIB_LIST)
+        self.fib_value = FIB_LIST[self.fib_index]
+
+        # position
+        self.pos = np.array([0.0, 0.0, 0.0], dtype=float)
+
+        # orthonormal frame
+        self.heading = np.array([1.0, 0.0, 0.0], dtype=float)  # forward
+        self.left    = np.array([0.0, 1.0, 0.0], dtype=float)  # local left
+        self.up      = np.array([0.0, 0.0, 1.0], dtype=float)  # local up
+
+        # buffers (use deque for automatic capping)
+        self.segments = deque(maxlen=MAX_SEGMENTS_PER_LOOP)  # store (a,b,age_index)
+        self.age_counter = 0
+
+        # Fibonacci-modulated parameters
+        self.speed = 3.0 + self.fib_value * 0.10   # visually pleasant
+        self.z_lift = 0.05 + self.fib_value * 0.003
+        self.color_hue = (self.fib_index / len(FIB_LIST)) % 1.0
+
+        # leaf bookkeeping (cap leaves too)
+        self.leaf_count = 0
+        self.leaves = deque(maxlen=MAX_LEAVES_PER_LOOP)  # list of (pos, size, hue)
+        self.leaf_interval_steps = max(3, int(6 - (self.fib_value * 0.02)))  # denser for larger fibs
+        self.leaf_distance = 6.0 + self.fib_value * 0.10
+
+        self.step_count = 0
+
+    # movement commands
+    def forward(self, dist):
+        step = dist * self.speed
+        new_pos = self.pos + self.heading * step
+        new_pos[2] += self.z_lift * step
+        # age index used to fade older segments
+        self.segments.append((self.pos.copy(), new_pos.copy(), self.age_counter))
+        self.age_counter += 1
+        self.pos = new_pos
+        self.step_count += 1
+
+    def yaw(self, angle):
+        self.heading = rotate_vec(self.heading, self.up, angle)
+        self.left    = rotate_vec(self.left, self.up, angle)
+
+    def pitch(self, angle):
+        self.heading = rotate_vec(self.heading, self.left, angle)
+        self.up      = rotate_vec(self.up, self.left, angle)
+
+    def roll(self, angle):
+        self.left = rotate_vec(self.left, self.heading, angle)
+        self.up   = rotate_vec(self.up, self.heading, angle)
+
+    # leaf placement
+    def plant_leaf(self):
+        if len(self.leaves) >= MAX_LEAVES_PER_LOOP:
+            return
+        rot_angle = GOLDEN_ANGLE_DEG * self.leaf_count
+        dir_vec = rotate_vec(self.left, self.heading, rot_angle)
+        leaf_pos = self.pos + dir_vec * self.leaf_distance + self.up * (0.25 * (self.leaf_count % 4))
+        size = max(1.0, 2.0 + (self.fib_value / (FIB_MAX+1e-9)) * 3.5)
+        hue = (self.color_hue + 0.02 * (self.leaf_count % 9)) % 1.0
+        self.leaves.append((leaf_pos, size, hue))
+        self.leaf_count += 1
+
+    def clear(self):
+        self.segments.clear()
+        self.leaves.clear()
+        self.age_counter = 0
+        self.leaf_count = 0
+        self.step_count = 0
+
+# =====================================================================
+# Loop System
+# =====================================================================
+class LoopSystem:
+    def __init__(self):
+        self.loops = []
+        self.spawn_initial()
+
+    def spawn_initial(self):
+        t = Turtle3D(fib_index=3)
+        t.pos = np.array([0.0, -40.0, -30.0], dtype=float)
+        self.loops.append(t)
+
+    def clear(self):
+        self.loops = []
+        self.spawn_initial()
+
+    def evolve(self):
+        new_loops = []
+        for loop in self.loops:
+            # movement
+            loop.forward(1.0)
+            loop.yaw(1.25 + loop.fib_value * 0.015)
+            loop.pitch(0.10 + (loop.fib_value % 5) * 0.001)
+            if random.random() < 0.02:
+                loop.roll(random.uniform(-3.0, 3.0))
+
+            # leaf planting
+            if loop.step_count % loop.leaf_interval_steps == 0:
+                loop.plant_leaf()
+
+            # occasional branch
+            if random.random() < 0.002 and len(self.loops) + len(new_loops) < 300:
+                new_fib = (loop.fib_index + random.choice([1,2,3])) % len(FIB_LIST)
+                child = Turtle3D(new_fib)
+                child.pos = loop.pos.copy()
+                child.heading = loop.heading.copy()
+                child.left = loop.left.copy()
+                child.up = loop.up.copy()
+                child.leaf_interval_steps = max(2, int(child.leaf_interval_steps * random.uniform(0.7, 1.4)))
+                new_loops.append(child)
+
+        self.loops.extend(new_loops)
+
+# =====================================================================
+# Rendering helpers (visual improvements)
+# =====================================================================
+def rgb_from_hue(h):
+    r,g,b = colorsys.hsv_to_rgb(h % 1.0, 0.9, 0.95)
+    return r,g,b
+
+def draw_segments(system, trail_alpha=0.9):
+    glLineWidth(1.8)
+    glBegin(GL_LINES)
+    for loop in system.loops:
+        # each segment carries an age index; we fade older segments
+        max_age = loop.age_counter if loop.age_counter > 0 else 1
+        for a, b_, age in loop.segments:
+            age_norm = (age / max_age) if max_age>0 else 0.0
+            # compute color with slight hue shift per loop
+            hue = loop.color_hue + 0.02 * (age % 10)
+            r,g,b = rgb_from_hue(hue)
+            # fade older segments (older == smaller alpha)
+            alpha = max(0.08, trail_alpha * (1.0 - age_norm*0.98))
+            glColor4f(r*0.85, g*0.9, b*0.95, alpha)
+            glVertex3f(a[0], a[1], a[2])
+            glVertex3f(b_[0], b_[1], b_[2])
+    glEnd()
+
+def draw_leaves(system):
+    # Group leaves by integer size buckets to set glPointSize per group (fast)
+    size_buckets = {}
+    for loop in system.loops:
+        for pos, size, hue in loop.leaves:
+            key = int(max(1, round(size)))
+            size_buckets.setdefault(key, []).append((pos, hue))
+    # draw each bucket once with glPointSize
+    glEnable(GL_POINT_SMOOTH)
+    for size_key, items in size_buckets.items():
+        glPointSize(min(12.0, 2.0 * size_key))
+        glBegin(GL_POINTS)
+        for pos, hue in items:
+            r,g,b = rgb_from_hue(hue)
+            glColor4f(r, g, b, 1.0)
+            glVertex3f(pos[0], pos[1], pos[2])
+        glEnd()
+    glDisable(GL_POINT_SMOOTH)
+
+# =====================================================================
+# Main and interaction (fixed viewport, clear color, pan/rotate state)
+# =====================================================================
+def init_gl():
+    glEnable(GL_DEPTH_TEST)
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    # background color slightly off-black so geometry shows up
+    glClearColor(0.04, 0.06, 0.08, 1.0)
+    glShadeModel(GL_SMOOTH)
+    # lighting is optional (disabled to keep fast). You can enable if you prefer.
+    # glEnable(GL_LIGHTING); glEnable(GL_LIGHT0)
+
+def resize_gl(w, h):
+    if h == 0:
+        h = 1
+    glViewport(0, 0, w, h)
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(45.0, float(w)/float(h), 0.1, 10000.0)
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode((WIDTH, HEIGHT), DOUBLEBUF | OPENGL | RESIZABLE)
+    pygame.display.set_caption("3D Turtle — Fibonacci + Golden-angle Leaves (Debugged Visuals)")
+
+    resize_gl(WIDTH, HEIGHT)
+    init_gl()
+
+    system = LoopSystem()
+
+    rotation_x = -18.0
+    rotation_y = 12.0
+    cam_dist = 700.0
+    pan_x = 0.0
+    pan_y = 0.0
+    last_mouse = None
+
+    show_leaves = True
+    show_trails = True
+
+    clock = pygame.time.Clock()
+    running = True
+
+    while running:
+        dt = clock.tick(60)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                running = False
+            elif event.type == VIDEORESIZE:
+                resize_gl(event.w, event.h)
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
+                elif event.key == K_l:
+                    show_leaves = not show_leaves
+                elif event.key == K_t:
+                    show_trails = not show_trails
+                elif event.key == K_c:
+                    system.clear()
+                elif event.key == K_r:
+                    # reset camera
+                    rotation_x = -18.0; rotation_y = 12.0; cam_dist = 700.0; pan_x = pan_y = 0.0
+            elif event.type == MOUSEWHEEL:
+                cam_dist -= event.y * 30.0
+                cam_dist = max(80.0, min(4000.0, cam_dist))
+            elif event.type == MOUSEBUTTONDOWN:
+                last_mouse = event.pos
+            elif event.type == MOUSEBUTTONUP:
+                last_mouse = None
+            elif event.type == MOUSEMOTION and last_mouse is not None:
+                mx, my = event.pos
+                dx = mx - last_mouse[0]
+                dy = my - last_mouse[1]
+                buttons = pygame.mouse.get_pressed()
+                if buttons[0]:
+                    rotation_y += dx * 0.32
+                    rotation_x += dy * 0.32
+                if buttons[2]:
+                    pan_x += dx * 0.3
+                    pan_y -= dy * 0.3
+                last_mouse = event.pos
+
+        # evolve scene
+        system.evolve()
+
+        # render
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glLoadIdentity()
+        # camera transform: translate for zoom, then pan, then rotate
+        glTranslatef(-pan_x, -pan_y, -cam_dist)
+        glRotatef(rotation_x, 1.0, 0.0, 0.0)
+        glRotatef(rotation_y, 0.0, 1.0, 0.0)
+
+        # draw grid for spatial reference (subtle)
+        glDisable(GL_LIGHTING) if glIsEnabled(GL_LIGHTING) else None
+        glLineWidth(1.0)
+        glBegin(GL_LINES)
+        glColor4f(0.2, 0.22, 0.24, 0.25)
+        for i in range(-200, 201, 40):
+            glVertex3f(i, -200.0, -2.0)
+            glVertex3f(i,  200.0, -2.0)
+            glVertex3f(-200.0, i, -2.0)
+            glVertex3f( 200.0, i, -2.0)
+        glEnd()
+
+        if show_trails:
+            draw_segments(system, trail_alpha=0.9)
+        if show_leaves:
+            draw_leaves(system)
+
+        pygame.display.flip()
+
+    pygame.quit()
+    sys.exit(0)
+
+if __name__ == "__main__":
+    main()
